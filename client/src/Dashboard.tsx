@@ -15,8 +15,8 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-const API_URL = 'http://localhost:3333';
-const WS_URL = 'ws://localhost:3333';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3333';
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3333';
 
 function Dashboard({ onLogout }: DashboardProps) {
   const [wsConnected, setWsConnected] = useState(false);
