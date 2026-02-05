@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckSquare, Plus, Calendar, AlertCircle, Clock } from 'lucide-react';
+import { apiHeaders } from '../config';
 
 interface Task {
   id: string;
@@ -21,7 +22,7 @@ export default function TaskBoard({ apiUrl }: { apiUrl: string }) {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch(`${apiUrl}/api/tasks`);
+      const res = await fetch(`${apiUrl}/api/tasks`, { headers: apiHeaders });
       const data = await res.json();
       setTasks(data);
     } catch (error) {
@@ -35,7 +36,7 @@ export default function TaskBoard({ apiUrl }: { apiUrl: string }) {
     try {
       await fetch(`${apiUrl}/api/tasks`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: apiHeaders,
         body: JSON.stringify({
           title: newTask,
           description: '',
@@ -54,7 +55,7 @@ export default function TaskBoard({ apiUrl }: { apiUrl: string }) {
     try {
       await fetch(`${apiUrl}/api/tasks/${taskId}/status`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: apiHeaders,
         body: JSON.stringify({ status: newStatus })
       });
       fetchTasks();

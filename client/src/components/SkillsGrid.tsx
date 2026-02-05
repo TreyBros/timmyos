@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { apiHeaders } from '../config';
 
 interface Skill {
   name: string;
@@ -22,7 +23,7 @@ export default function SkillsGrid({ apiUrl }: { apiUrl: string }) {
   const [skills, setSkills] = useState<Skill[]>([]);
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/skills`)
+    fetch(`${apiUrl}/api/skills`, { headers: apiHeaders })
       .then(res => res.json())
       .then(data => setSkills(data))
       .catch(console.error);

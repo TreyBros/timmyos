@@ -16,6 +16,23 @@ const wss = new WebSocketServer({ server });
 app.use(cors());
 app.use(express.json());
 
+// ===== API KEY PROTECTION =====
+const API_KEY = process.env.TIMMYOS_API_KEY || 'timmy-dev-key-change-in-production';
+
+function requireApiKey(req, res, next) {
+  const providedKey = req.headers['x-api-key'];
+  if (!providedKey) {
+    return res.status(401).json({ error: 'API key required' });
+  }
+  if (providedKey !== API_KEY) {
+    return res.status(403).json({ error: 'Invalid API key' });
+  }
+  next();
+}
+
+// Apply API key protection to all API routes
+app.use('/api', requireApiKey);
+
 const CLAWD_DIR = '/home/treyti/clawd';
 const MEMORY_DIR = path.join(CLAWD_DIR, 'memory');
 const KANBAN_FILE = path.join(CLAWD_DIR, 'kanban', 'tasks.json');
@@ -293,9 +310,19 @@ app.post('/api/actions/:action', async (req, res) => {
 // ===== WEBSOCKET =====
 const clients = new Set();
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+  // Validate API key from query string
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const providedKey = url.searchParams.get('key');
+  
+  if (!providedKey || providedKey !== API_KEY) {
+    console.log('WebSocket connection rejected: invalid API key');
+    ws.close(1008, 'Invalid API key');
+    return;
+  }
+  
   clients.add(ws);
-  console.log('Client connected');
+  console.log('Client connected (authenticated)');
   
   ws.on('close', () => {
     clients.delete(ws);

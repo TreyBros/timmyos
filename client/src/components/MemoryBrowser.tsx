@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FolderOpen, FileText, Search, Clock } from 'lucide-react';
+import { apiHeaders } from '../config';
 
 interface MemoryFile {
   name: string;
@@ -14,7 +15,7 @@ export default function MemoryBrowser({ apiUrl }: { apiUrl: string }) {
   const [selected, setSelected] = useState<MemoryFile | null>(null);
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/memory`)
+    fetch(`${apiUrl}/api/memory`, { headers: apiHeaders })
       .then(res => res.json())
       .then(data => setFiles(data))
       .catch(console.error);

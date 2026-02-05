@@ -3,6 +3,7 @@ import {
   Play, RefreshCw, Trash2, Server, Brain, 
   Activity, Terminal, MessageSquare
 } from 'lucide-react';
+import { apiHeaders } from '../config';
 
 interface Action {
   id: string;
@@ -29,7 +30,8 @@ export default function QuickActions({ apiUrl, onAction }: { apiUrl: string; onA
     
     try {
       const res = await fetch(`${apiUrl}/api/actions/${actionId}`, {
-        method: 'POST'
+        method: 'POST',
+        headers: apiHeaders
       });
       const data = await res.json();
       

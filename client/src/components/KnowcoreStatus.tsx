@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Brain, CheckCircle, XCircle, Database, Zap } from 'lucide-react';
+import { apiHeaders } from '../config';
 
 interface KnowcoreData {
   connected: boolean;
@@ -17,7 +18,7 @@ export default function KnowcoreStatus({ apiUrl }: { apiUrl: string }) {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/knowcore`);
+        const res = await fetch(`${apiUrl}/api/knowcore`, { headers: apiHeaders });
         const result = await res.json();
         setData(result);
       } catch (error) {

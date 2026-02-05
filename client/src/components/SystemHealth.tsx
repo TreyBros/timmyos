@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Cpu, Thermometer, HardDrive, Clock, AlertCircle } from 'lucide-react';
+import { apiHeaders } from '../config';
 
 interface HealthData {
   ram: { used: string; total: string; percent: number; status: string };
@@ -11,15 +12,19 @@ interface HealthData {
 export default function SystemHealth({ apiUrl }: { apiUrl: string }) {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchHealth = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/health`);
+        const res = await fetch(`${apiUrl}/api/health`, { headers: apiHeaders });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setHealth(data);
+        setError(null);
       } catch (error) {
         console.error('Health fetch error:', error);
+        setError('Failed to fetch health data');
       } finally {
         setLoading(false);
       }
