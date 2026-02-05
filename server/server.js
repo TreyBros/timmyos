@@ -7,6 +7,10 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import chokidar from 'chokidar';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const execAsync = promisify(exec);
 const app = express();
@@ -15,6 +19,10 @@ const wss = new WebSocketServer({ server });
 
 app.use(cors());
 app.use(express.json());
+
+// ===== SERVE STATIC FRONTEND =====
+const DIST_DIR = path.join(__dirname, '../client/dist');
+app.use(express.static(DIST_DIR));
 
 // ===== API KEY PROTECTION =====
 const API_KEY = process.env.TIMMYOS_API_KEY || 'timmy-dev-key-change-in-production';
@@ -353,9 +361,17 @@ setInterval(async () => {
   broadcast('health', await getSystemHealth());
 }, 5000);
 
+// ===== SPA CATCH-ALL =====
+// Serve index.html for any non-API routes (React Router support)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(DIST_DIR, 'index.html'));
+});
+
 // ===== START SERVER =====
 const PORT = process.env.PORT || 3333;
-server.listen(PORT, () => {
-  console.log(`🧠 TimmyOS Server running on http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🧠 TimmyOS Server running on:`);
+  console.log(`   Local:   http://localhost:${PORT}`);
+  console.log(`   Network: http://10.0.0.204:${PORT}`);
   console.log('WebSocket enabled for real-time updates');
 });

@@ -1,6 +1,7 @@
 // API Configuration
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3333';
-export const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3333';
+// Use relative URLs for self-hosted mode (same origin)
+export const API_URL = '';  // Empty = same origin
+export const WS_URL = `ws://${window.location.host}`;
 export const API_KEY = import.meta.env.VITE_API_KEY || 'timmy-dev-key';
 
 // Headers for API requests
